@@ -1,0 +1,47 @@
+version: '3.1'
+
+networks:
+    monitoring:
+        ipam:
+            driver: default
+            config:
+              - subnet: 172.40.0.0/16
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus/:/etc/prometheus/
+    ports:
+      - 9090:9090
+    networks:
+        monitoring:
+            ipv4_address: 172.40.0.2
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+        monitoring:
+            ipv4_address: 172.40.0.3
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: always
+
+  flask_app:
+    build:
+      context: "./app"
+    ports:
+      - 5000:5000 # app port
+    networks:
+        monitoring:
+            ipv4_address: 172.40.0.10
+    restart: always
+      
