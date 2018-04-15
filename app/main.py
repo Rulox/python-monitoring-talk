@@ -24,9 +24,14 @@ def labels():
     """
     This function tries to mimmic a normal http server. It will return randomly
     200/403/404/500 status codes with the responses to test the CounterVec with
-    Labels from prometheus.
+    Labels from prometheus. We will give more chance to 200 and 404 to see a real difference
+    in our Grafana panel
     """
     status = [200, 403, 404, 500]
+    for i in range(6):
+        status.append(200)
+    for i in range(3):
+        status.append(404)
     code = random.choice(status)
     server_requests.labels(status=code, endpoint="/labels").inc()
     if code == 200:
@@ -38,10 +43,10 @@ def labels():
 def metrics():
     """
     We need to add an endpoint of our flask server to expose the metrics so
-    Prometheus can fetch all. See Note1 in main() for more info.
+    Prometheus can fetch all. See Note in main() for more info.
     """
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 if __name__ == '__main__':
-    # start_http_server(9888) Note: You would normally use this in a regular sync python app.
+    # start_http_server(9888) Note: You would normally use this in a regular python app.
     app.run(debug=True, host="0.0.0.0", port=5000)
