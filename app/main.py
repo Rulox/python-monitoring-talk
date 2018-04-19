@@ -11,6 +11,8 @@ app = Flask(__name__)
 # Flask routes
 
 index_requests = Counter("n_requests_index", "Number of requests to the Index / endpoint")
+
+
 @app.route("/")
 def hello():
     index_requests.inc()
@@ -19,6 +21,8 @@ def hello():
 
 # With Labels
 server_requests = Counter('my_requests_total', 'HTTP Requests', ['status', 'endpoint'])
+
+
 @app.route("/labels")
 def labels():
     """
